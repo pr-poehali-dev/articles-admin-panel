@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
+import { useNavigate } from 'react-router-dom';
 
 interface Article {
   id: number;
@@ -19,71 +17,10 @@ interface Article {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'news'>('home');
   const [searchQuery, setSearchQuery] = useState('');
-  const [articles, setArticles] = useState<Article[]>([
-    {
-      id: 1,
-      title: 'Будущее искусственного интеллекта в 2025',
-      excerpt: 'Исследуем главные тренды и прорывы в области ИИ, которые изменят мир технологий в ближайшие годы.',
-      category: 'Технологии',
-      date: '20 декабря 2024',
-      readTime: '5 мин',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80'
-    },
-    {
-      id: 2,
-      title: 'Дизайн-системы: от концепции до реализации',
-      excerpt: 'Пошаговое руководство по созданию масштабируемой дизайн-системы для современных продуктов.',
-      category: 'Дизайн',
-      date: '18 декабря 2024',
-      readTime: '8 мин',
-      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80'
-    },
-    {
-      id: 3,
-      title: 'Квантовые компьютеры: революция в вычислениях',
-      excerpt: 'Как квантовые технологии меняют подход к решению сложнейших задач науки и бизнеса.',
-      category: 'Наука',
-      date: '15 декабря 2024',
-      readTime: '6 мин',
-      image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&q=80'
-    },
-    {
-      id: 4,
-      title: 'Web3 и децентрализованный интернет',
-      excerpt: 'Разбираем принципы работы блокчейна и его влияние на будущее веб-технологий.',
-      category: 'Технологии',
-      date: '12 декабря 2024',
-      readTime: '7 мин',
-      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80'
-    },
-    {
-      id: 5,
-      title: 'Минимализм в UX: меньше значит больше',
-      excerpt: 'Почему простота интерфейса — ключ к успешному пользовательскому опыту.',
-      category: 'Дизайн',
-      date: '10 декабря 2024',
-      readTime: '4 мин',
-      image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&q=80'
-    },
-    {
-      id: 6,
-      title: 'Нейросети в творчестве: новая эра искусства',
-      excerpt: 'Как генеративные модели помогают художникам и дизайнерам создавать уникальный контент.',
-      category: 'Искусство',
-      date: '8 декабря 2024',
-      readTime: '6 мин',
-      image: 'https://images.unsplash.com/photo-1686191128892-1f6264717d9f?w=800&q=80'
-    }
-  ]);
-
-  const [newArticle, setNewArticle] = useState({
-    title: '',
-    excerpt: '',
-    category: '',
-    image: ''
-  });
+  const [articles] = useState<Article[]>([]);
 
   const filteredArticles = articles.filter(article =>
     article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,22 +29,6 @@ const Index = () => {
   );
 
   const newsArticles = articles.filter(article => article.category === 'Технологии' || article.category === 'Наука');
-
-  const handlePublish = () => {
-    if (newArticle.title && newArticle.excerpt && newArticle.category) {
-      const article: Article = {
-        id: articles.length + 1,
-        title: newArticle.title,
-        excerpt: newArticle.excerpt,
-        category: newArticle.category,
-        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-        readTime: '5 мин',
-        image: newArticle.image || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80'
-      };
-      setArticles([article, ...articles]);
-      setNewArticle({ title: '', excerpt: '', category: '', image: '' });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -157,68 +78,13 @@ const Index = () => {
               </button>
             </nav>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-lg shadow-primary/25">
-                  <Icon name="PenSquare" size={18} />
-                  Написать
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">Новая статья</DialogTitle>
-                  <DialogDescription>Заполните форму для публикации статьи</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="title">Заголовок</Label>
-                    <Input
-                      id="title"
-                      placeholder="Введите заголовок статьи"
-                      value={newArticle.title}
-                      onChange={(e) => setNewArticle({ ...newArticle, title: e.target.value })}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="category">Категория</Label>
-                    <Input
-                      id="category"
-                      placeholder="Технологии, Дизайн, Наука..."
-                      value={newArticle.category}
-                      onChange={(e) => setNewArticle({ ...newArticle, category: e.target.value })}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="excerpt">Краткое описание</Label>
-                    <Textarea
-                      id="excerpt"
-                      placeholder="Опишите о чем ваша статья"
-                      value={newArticle.excerpt}
-                      onChange={(e) => setNewArticle({ ...newArticle, excerpt: e.target.value })}
-                      className="mt-2 min-h-[100px]"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="image">URL изображения (опционально)</Label>
-                    <Input
-                      id="image"
-                      placeholder="https://example.com/image.jpg"
-                      value={newArticle.image}
-                      onChange={(e) => setNewArticle({ ...newArticle, image: e.target.value })}
-                      className="mt-2"
-                    />
-                  </div>
-                  <Button 
-                    onClick={handlePublish}
-                    className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90"
-                  >
-                    Опубликовать
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              onClick={() => navigate('/admin')}
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
+            >
+              <Icon name="Settings" size={18} />
+              Админ
+            </Button>
           </div>
 
           <div className="md:hidden flex items-center gap-2 mt-4">
@@ -288,47 +154,65 @@ const Index = () => {
                   <Icon name="ArrowRight" size={16} />
                 </Button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article, index) => (
-                  <Card 
-                    key={article.id} 
-                    className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 animate-fade-up"
-                    style={{ animationDelay: `${index * 100}ms` }}
+              {articles.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-4">
+                    <Icon name="FileText" size={40} className="text-muted-foreground" />
+                  </div>
+                  <h4 className="text-xl font-semibold mb-2">Статей пока нет</h4>
+                  <p className="text-muted-foreground mb-6">
+                    Начните публиковать статьи через админ-панель
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/admin')}
+                    className="bg-gradient-to-r from-primary to-secondary"
                   >
-                    <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={article.image} 
-                        alt={article.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <Badge className="absolute top-4 left-4 bg-primary/90 backdrop-blur-sm">
-                        {article.category}
-                      </Badge>
-                    </div>
-                    <CardHeader>
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                        {article.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {article.excerpt}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Icon name="Calendar" size={14} />
-                          <span>{article.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="Clock" size={14} />
-                          <span>{article.readTime}</span>
-                        </div>
+                    Перейти в админ-панель
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {articles.map((article, index) => (
+                    <Card 
+                      key={article.id} 
+                      className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 animate-fade-up"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={article.image} 
+                          alt={article.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                        <Badge className="absolute top-4 left-4 bg-primary/90 backdrop-blur-sm">
+                          {article.category}
+                        </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      <CardHeader>
+                        <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                          {article.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {article.excerpt}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Icon name="Calendar" size={14} />
+                            <span>{article.date}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Icon name="Clock" size={14} />
+                            <span>{article.readTime}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
         )}
@@ -354,45 +238,59 @@ const Index = () => {
                   Найдено: <span className="text-foreground font-semibold">{filteredArticles.length}</span> {filteredArticles.length === 1 ? 'статья' : 'статей'}
                 </p>
               )}
-              <div className="space-y-4">
-                {(searchQuery ? filteredArticles : articles).map((article, index) => (
-                  <Card 
-                    key={article.id}
-                    className="group hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 animate-scale-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <div className="flex flex-col md:flex-row gap-4 p-6">
-                      <div className="relative w-full md:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0">
-                        <img 
-                          src={article.image} 
-                          alt={article.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                          <h3 className="text-xl font-bold group-hover:text-accent transition-colors">
-                            {article.title}
-                          </h3>
-                          <Badge variant="outline" className="flex-shrink-0">{article.category}</Badge>
+              {(searchQuery ? filteredArticles : articles).length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-4">
+                    <Icon name="Search" size={40} className="text-muted-foreground" />
+                  </div>
+                  <h4 className="text-xl font-semibold mb-2">
+                    {searchQuery ? 'Ничего не найдено' : 'Статей пока нет'}
+                  </h4>
+                  <p className="text-muted-foreground">
+                    {searchQuery ? 'Попробуйте изменить поисковый запрос' : 'Начните публиковать статьи через админ-панель'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {(searchQuery ? filteredArticles : articles).map((article, index) => (
+                    <Card 
+                      key={article.id}
+                      className="group hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 animate-scale-in"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <div className="flex flex-col md:flex-row gap-4 p-6">
+                        <div className="relative w-full md:w-48 h-32 rounded-lg overflow-hidden flex-shrink-0">
+                          <img 
+                            src={article.image} 
+                            alt={article.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
                         </div>
-                        <p className="text-muted-foreground mb-4 line-clamp-2">{article.excerpt}</p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Icon name="Calendar" size={14} />
-                            <span>{article.date}</span>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <h3 className="text-xl font-bold group-hover:text-accent transition-colors">
+                              {article.title}
+                            </h3>
+                            <Badge variant="outline" className="flex-shrink-0">{article.category}</Badge>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Icon name="Clock" size={14} />
-                            <span>{article.readTime}</span>
+                          <p className="text-muted-foreground mb-4 line-clamp-2">{article.excerpt}</p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Icon name="Calendar" size={14} />
+                              <span>{article.date}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Icon name="Clock" size={14} />
+                              <span>{article.readTime}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -407,51 +305,63 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-              {newsArticles.map((article, index) => (
-                <Card 
-                  key={article.id}
-                  className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-secondary/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1 animate-fade-up"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="relative h-56 overflow-hidden">
-                    <img 
-                      src={article.image} 
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-                    <Badge className="absolute top-4 right-4 bg-secondary/90 backdrop-blur-sm">
-                      {article.category}
-                    </Badge>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
-                        {article.title}
-                      </h3>
-                    </div>
-                  </div>
-                  <CardContent className="pt-6">
-                    <p className="text-muted-foreground mb-4">{article.excerpt}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Icon name="Calendar" size={14} />
-                          <span>{article.date}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Icon name="Clock" size={14} />
-                          <span>{article.readTime}</span>
-                        </div>
+            {newsArticles.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-4">
+                  <Icon name="Newspaper" size={40} className="text-muted-foreground" />
+                </div>
+                <h4 className="text-xl font-semibold mb-2">Новостей пока нет</h4>
+                <p className="text-muted-foreground">
+                  Добавьте статьи с категориями "Технологии" или "Наука"
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+                {newsArticles.map((article, index) => (
+                  <Card 
+                    key={article.id}
+                    className="group overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm hover:border-secondary/50 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1 animate-fade-up"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <img 
+                        src={article.image} 
+                        alt={article.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                      <Badge className="absolute top-4 right-4 bg-secondary/90 backdrop-blur-sm">
+                        {article.category}
+                      </Badge>
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                          {article.title}
+                        </h3>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-secondary hover:bg-secondary/10">
-                        Читать
-                        <Icon name="ArrowRight" size={14} />
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <CardContent className="pt-6">
+                      <p className="text-muted-foreground mb-4">{article.excerpt}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Icon name="Calendar" size={14} />
+                            <span>{article.date}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Icon name="Clock" size={14} />
+                            <span>{article.readTime}</span>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-secondary hover:bg-secondary/10">
+                          Читать
+                          <Icon name="ArrowRight" size={14} />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
